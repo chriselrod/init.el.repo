@@ -118,9 +118,10 @@ There are two things you can do about this warning:
   (require 'dap-cpptools)
   (yas-global-mode))
 
-;; (setq load-path
-;;       (cons (expand-file-name "/home/chriselrod/Documents/languages/julia/deps/srccache/llvm-11.0.0/utils/emacs") load-path))
-;; (require 'llvm-mode)
+(setq load-path (cons (expand-file-name "/home/chriselrod/Documents/languages/llvm-project/llvm/utils/emacs") load-path))
+(require 'llvm-mode)
+
+(require 'cmake-mode)
 
 (setq inhibit-splash-screen t)
 

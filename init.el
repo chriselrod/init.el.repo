@@ -40,7 +40,7 @@ There are two things you can do about this warning:
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(ess hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
+   '(company company-irony irony lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode ess hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
@@ -63,28 +63,60 @@ There are two things you can do about this warning:
 			(interactive)
 			(other-window -1)))
 
+
+(defun chris/julia-hooks ()
+  (highlight-symbol-mode)
+  (lsp)
+  (lsp-ui-peek))
+(use-package julia-mode
+  ;; :after ess
+  :hook (julia-mode . bill/julia-hooks))
+
 ;; Julia-support
 (require 'julia-mode)
 (setq julia-max-block-lookback 200000)
 (require 'julia-repl)
 (add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
-(setq julia-repl-switches "-O3 -q -t36 --startup=no -L/home/chriselrod/.julia/config/emacs_startup.jl")
+(setq julia-repl-switches "-O3 -q -tauto --startup=no -L/home/chriselrod/.julia/config/emacs_startup.jl")
 ;; (setq julia-repl-switches "-O3 -q -t18 -C'native,-prefer-256-bit' --startup=no -L/home/chriselrod/.julia/config/emacs_startup.jl")
 (setq julia-repl-executable-records
       '((default "/home/chriselrod/Documents/languages/julia-master/usr/bin/julia")
 	(release "/home/chriselrod/Documents/languages/julia/usr/bin/julia")))
 
 (add-hook 'julia-repl-hook #'julia-repl-use-emacsclient)
-(setenv "JULIA_NUM_THREADS" "36")
+;; (setenv "JULIA_NUM_THREADS" "36")
 
 (require 'treemacs)
 (use-package treemacs
     :hook (after-init .#'treemacs))
 (add-hook 'after-init-hook 'global-company-mode)
 
+(add-hook 'after-init-hook 'global-company-mode)
 (add-to-list 'company-backends `(company-dabbrev))
 (setq company-dabbrev-downcase nil)
 (add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
+
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'objc-mode-hook 'irony-mode)
+
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-irony))
+
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(company-mode)
+(helm-mode)
+(which-key-mode)
+(add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
+(use-package lsp-ui)
+
+
+(with-eval-after-load 'lsp-mode
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+  (require 'dap-cpptools)
+  (yas-global-mode))
 
 ;; (setq load-path
 ;;       (cons (expand-file-name "/home/chriselrod/Documents/languages/julia/deps/srccache/llvm-11.0.0/utils/emacs") load-path))
@@ -121,3 +153,5 @@ There are two things you can do about this warning:
 (require 'org)
 
 (setq julia-indent-offset 2)
+(setq c-basic-offset 4)
+

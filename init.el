@@ -40,7 +40,7 @@ There are two things you can do about this warning:
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(company company-irony irony lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode ess hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
+   '(company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode ess hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
@@ -96,13 +96,6 @@ There are two things you can do about this warning:
 (setq company-dabbrev-downcase nil)
 (add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
-
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-irony))
 
 (add-hook 'after-init-hook #'global-flycheck-mode)
 (company-mode)
@@ -110,13 +103,23 @@ There are two things you can do about this warning:
 (which-key-mode)
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
-(use-package lsp-ui)
-
+(use-package lsp-ui :commands lsp-ui-mode)
+;;(use-package lsp-ui)
+(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package which-key
+    :config
+    (which-key-mode))
 
 (with-eval-after-load 'lsp-mode
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (require 'dap-cpptools)
   (yas-global-mode))
+
+(setq lsp-keymap-prefix "s-p")
+
+(setq company-minimum-prefix-length 1
+      company-idle-delay 0.0) ;; default is 0.2
 
 (setq load-path (cons (expand-file-name "/home/chriselrod/Documents/languages/llvm-project/llvm/utils/emacs") load-path))
 (require 'llvm-mode)
@@ -155,4 +158,8 @@ There are two things you can do about this warning:
 
 (setq julia-indent-offset 2)
 (setq c-basic-offset 4)
+
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+
 

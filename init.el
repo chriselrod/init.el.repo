@@ -91,9 +91,9 @@ There are two things you can do about this warning:
     :hook (after-init .#'treemacs))
 (add-hook 'after-init-hook 'global-company-mode)
 
-(add-hook 'after-init-hook 'global-company-mode)
-(add-to-list 'company-backends `(company-dabbrev))
-(setq company-dabbrev-downcase nil)
+;; (add-to-list 'company-backends `(company-dabbrev))
+;; (setq company-dabbrev-downcase nil)
+;; treat underscores as a part of a word
 (add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
 

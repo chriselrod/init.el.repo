@@ -162,4 +162,8 @@ There are two things you can do about this warning:
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
+(global-auto-revert-mode 1)
+(setq auto-revert-avoid-polling 1)
+
+
 

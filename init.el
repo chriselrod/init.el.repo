@@ -45,7 +45,8 @@ There are two things you can do about this warning:
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(warning-suppress-types '((comp) (comp) (comp))))
 ;; 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

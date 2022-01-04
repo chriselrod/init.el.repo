@@ -71,7 +71,7 @@ There are two things you can do about this warning:
   (lsp-ui-peek))
 (use-package julia-mode
   ;; :after ess
-  :hook (julia-mode . bill/julia-hooks))
+  :hook (julia-mode . chris/julia-hooks))
 
 ;; Julia-support
 (require 'julia-mode)
@@ -168,3 +168,4 @@ There are two things you can do about this warning:
 
 
 
+(put 'downcase-region 'disabled nil)

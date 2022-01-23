@@ -40,7 +40,7 @@ There are two things you can do about this warning:
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode ess hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
+   '(rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode ess hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
@@ -104,6 +104,7 @@ There are two things you can do about this warning:
 (which-key-mode)
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
+(add-hook 'rust-mode-hook #'lsp)
 (use-package lsp-ui :commands lsp-ui-mode)
 ;;(use-package lsp-ui)
 (use-package helm-lsp :commands helm-lsp-workspace-symbol)
@@ -116,6 +117,7 @@ There are two things you can do about this warning:
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (require 'dap-cpptools)
   (yas-global-mode))
+
 
 (setq lsp-keymap-prefix "s-p")
 
@@ -166,6 +168,6 @@ There are two things you can do about this warning:
 (global-auto-revert-mode 1)
 (setq auto-revert-avoid-polling 1)
 
-
+;; (setq lsp-restart auto-restart)
 
 (put 'downcase-region 'disabled nil)

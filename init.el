@@ -40,7 +40,7 @@ There are two things you can do about this warning:
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode ess hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
+   '(rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
@@ -124,7 +124,8 @@ There are two things you can do about this warning:
 (setq company-minimum-prefix-length 1
       company-idle-delay 0.0) ;; default is 0.2
 
-(setq load-path (cons (expand-file-name "/home/chriselrod/Documents/languages/llvm-project/llvm/utils/emacs") load-path))
+;; (setq load-path (cons (expand-file-name "/home/chriselrod/Documents/languages/llvm-project/llvm/utils/emacs") load-path))
+(setq load-path (cons (expand-file-name "/home/chriselrod/.emacs.d/init.el.repo/llvm-mode") load-path))
 (require 'llvm-mode)
 
 (require 'cmake-mode)

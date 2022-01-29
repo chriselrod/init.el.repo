@@ -130,7 +130,7 @@ There are two things you can do about this warning:
       company-idle-delay 0.0) ;; default is 0.2
 
 ;; (setq load-path (cons (expand-file-name "/home/chriselrod/Documents/languages/llvm-project/llvm/utils/emacs") load-path))
-(setq load-path (cons (expand-file-name "/home/chriselrod/.emacs.d/init.el.repo/llvm-mode") load-path))
+(setq load-path (cons (expand-file-name "/home/chriselrod/.emacs.d/init.el.repo/llvm_mode") load-path))
 (require 'llvm-mode)
 
 (require 'cmake-mode)

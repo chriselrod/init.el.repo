@@ -1,21 +1,22 @@
 (require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl
-    (warn "\
-Your version of Emacs does not support SSL connections,
-which is unsafe because it allows man-in-the-middle attacks.
-There are two things you can do about this warning:
-1. Install an Emacs version that does support SSL and be safe.
-2. Remove this warning from your init file so you won't see it again."))
-  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-  (when (< emacs-major-version 24)
-    ;; For important compatibility libraries like cl-lib
-    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
 (package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-and-compile
+  (setq use-package-always-ensure t
+	use-package-expand-minimally t))
+
+(use-package paren
+  :ensure nil
+  :init
+  (setq show-paren-delay 0)
+  :config
+  (show-paren-mode +1))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -40,22 +41,23 @@ There are two things you can do about this warning:
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(exec-path-from-shell toml-mode rust-playground rustic rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode company-math))
+   '(cmake-mode exec-path-from-shell toml-mode rust-playground rustic rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
- '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(warning-suppress-types '((comp) (comp) (comp))))
-;; 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; Commented out font as this causes lsp-ui sideline text to wrap. https://github.com/emacs-lsp/lsp-ui/issues/231
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(default ((t (:family "Iosevka Term Curly" :foundry "UKWN" :slant normal :weight regular :height 120 :width normal)))))
 
-(require 'company-math)
+
+
+(setq inhibit-splash-screen t)
 ;; Key-bindings
 ;; Undef
 (global-unset-key (kbd "C-z"))
@@ -65,44 +67,65 @@ There are two things you can do about this warning:
 			(other-window -1)))
 
 
-(defun chris/julia-hooks ()
-  (highlight-symbol-mode)
-  (lsp)
-  (lsp-ui-peek))
-(use-package julia-mode
-  ;; :after ess
-  :hook (julia-mode . chris/julia-hooks))
 
-;; Julia-support
-(require 'julia-mode)
-(setq julia-max-block-lookback 200000)
-(require 'julia-repl)
-(add-hook 'julia-mode-hook 'julia-repl-mode) ;; always use minor mode
-(setq julia-repl-switches "-O3 -q -tauto --startup=no");; -L/home/chriselrod/.julia/config/emacs_startup.jl")
-;; (setq julia-repl-switches "-O3 -q -t18 -C'native,-prefer-256-bit' --startup=no -L/home/chriselrod/.julia/config/emacs_startup.jl")
-(setq julia-repl-executable-records
-      '((default "/home/chriselrod/Documents/languages/julia/usr/bin/julia")
-	(release "/home/chriselrod/Documents/languages/juliarelease/usr/bin/julia")))
-
-(add-hook 'julia-repl-hook #'julia-repl-use-emacsclient)
-
-(require 'treemacs)
 (use-package treemacs
     :hook (after-init .#'treemacs))
-(add-hook 'after-init-hook 'global-company-mode)
 
-(add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
+;; (add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
+
+(use-package helm)
+(use-package which-key
+    :config
+    (which-key-mode))
 
 
-(company-mode)
-(helm-mode)
-(which-key-mode)
-(add-hook 'c-mode-hook 'lsp)
-(add-hook 'c++-mode-hook 'lsp)
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; for rust-analyzer integration
+
+(use-package lsp-mode
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration)
+  ((c-mode c++-mode julia-mode rustic) . lsp-deferred)
+  :commands lsp
+  :custom
+  ;; what to use when checking on-save. "check" is default, I prefer clippy
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.6)
+  (lsp-rust-analyzer-server-display-inlay-hints t)
+  (lsp-keymap-prefix "s-p")
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  (setq lsp-restart 'auto-restart))
+
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  ;; (lsp-ui-doc-enable nil)
+  (lsp-ui-sideline-show-code-actions t)
+  (lsp-ui-sideline-delay 0.05))
+
+(use-package julia-mode)
+  ;; :hook (julia-mode . ((highlight-symbol-mode)
+  ;; (lsp)
+  ;; (lsp-ui-peek)))
+  ;; :custom
+  ;; julia-max-block-lookback 200000)
+(use-package julia-repl
+  :config
+  (setq julia-repl-switches "-O3 -q -tauto")
+  (setq julia-repl-executable-records
+   '((default "/home/chriselrod/Documents/languages/julia/usr/bin/julia")
+     (release "/home/chriselrod/Documents/languages/juliarelease/usr/bin/julia")))
+  (add-hook 'julia-mode-hook 'julia-repl-mode))
+(use-package lsp-julia
+  :config
+  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
 
 ;; https://github.com/rksm/emacs-rust-config
 (use-package rustic
-  :ensure
   :bind (:map rustic-mode-map
               ("M-j" . lsp-ui-imenu)
               ("M-?" . lsp-find-references)
@@ -123,51 +146,25 @@ There are two things you can do about this warning:
 
   ;; comment to disable rustfmt on save
   (setq rustic-format-on-save t))
+;; (add-hook 'c-mode-hook 'lsp)
+;; (add-hook 'c++-mode-hook 'lsp)
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-;; for rust-analyzer integration
-
-(use-package lsp-mode
-  :ensure
-  :hook (lsp-mode . lsp-enable-which-key-integration)
-  :commands lsp
-  :custom
-  ;; what to use when checking on-save. "check" is default, I prefer clippy
-  (lsp-rust-analyzer-cargo-watch-command "clippy")
-  (lsp-eldoc-render-all t)
-  (lsp-idle-delay 0.6)
-  (lsp-rust-analyzer-server-display-inlay-hints t)
-  :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-
-(use-package lsp-ui
-  :ensure
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable nil))
 
 (use-package helm-lsp :commands helm-lsp-workspace-symbol)
 (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-(use-package which-key
-    :config
-    (which-key-mode))
 
-(use-package flycheck :ensure)
+(use-package flycheck)
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; auto-completion and code snippets
 
 (use-package yasnippet
-  :ensure
   :config
   (yas-reload-all)
   (add-hook 'prog-mode-hook 'yas-minor-mode)
   (add-hook 'text-mode-hook 'yas-minor-mode))
 
 (use-package company
-  :ensure
   :bind
   (:map company-active-map
               ("C-n". company-select-next)
@@ -177,7 +174,7 @@ There are two things you can do about this warning:
   (:map company-mode-map
         ("<tab>". tab-indent-or-complete)
         ("TAB". tab-indent-or-complete)))
-
+ 
 (defun company-yasnippet-or-completion ()
   (interactive)
   (or (do-yas-expand)
@@ -209,25 +206,23 @@ There are two things you can do about this warning:
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Create / cleanup rust scratch projects quickly
 
-(use-package rust-playground :ensure)
+(use-package rust-playground)
 
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; for Cargo.toml and other config files
 
-(use-package toml-mode :ensure)
+(use-package toml-mode)
 
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; setting up debugging support with dap-mode
 
 (use-package exec-path-from-shell
-  :ensure
   :init (exec-path-from-shell-initialize))
 
 (when (executable-find "lldb-mi")
   (use-package dap-mode
-    :ensure
     :config
     (dap-ui-mode)
     (dap-ui-controls-mode 1)
@@ -246,27 +241,10 @@ There are two things you can do about this warning:
            ;; :lldbmipath "path/to/lldb-mi"
            ))))
 
-
-
-
-;; (with-eval-after-load 'lsp-mode
-;;   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-;;   (require 'dap-cpptools)
-;;   (yas-global-mode))
-
-
-;; (setq lsp-keymap-prefix "s-p")
-
-(setq company-minimum-prefix-length 1
-      company-idle-delay 0.0) ;; default is 0.2
-
-;; (setq load-path (cons (expand-file-name "/home/chriselrod/Documents/languages/llvm-project/llvm/utils/emacs") load-path))
-(setq load-path (cons (expand-file-name "/home/chriselrod/.emacs.d/init.el.repo/llvm_mode") load-path))
+(setq load-path (cons (expand-file-name "~/.emacs.d/init.el.repo/llvm_mode") load-path))
 (require 'llvm-mode)
 
-(require 'cmake-mode)
-
-(setq inhibit-splash-screen t)
+(use-package cmake-mode)
 
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode)
@@ -315,7 +293,6 @@ There are two things you can do about this warning:
   (flycheck-mode . flycheck-clang-tidy-setup)
   )
 (use-package flycheck-clang-analyzer
-  :ensure t
   :after flycheck
   :config (flycheck-clang-analyzer-setup))
 

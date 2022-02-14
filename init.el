@@ -17,6 +17,11 @@
   :config
   (show-paren-mode +1))
 
+(unless (package-installed-p 'foggy-night-theme)
+  (package-refresh-contents)
+  (package-install 'foggy-night-theme))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -41,7 +46,7 @@
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(cmake-mode exec-path-from-shell toml-mode rust-playground rustic rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode))
+   '(flycheck-clang-analyzer flycheck-clang-tidy cmake-mode exec-path-from-shell toml-mode rust-playground rustic rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
@@ -70,13 +75,22 @@
 
 (use-package treemacs
     :hook (after-init .#'treemacs))
-
+(use-package treemacs-projectile)
 ;; (add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
 (use-package helm)
+(use-package helm-projectile)
 (use-package which-key
     :config
     (which-key-mode))
+
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -296,3 +310,9 @@
   :after flycheck
   :config (flycheck-clang-analyzer-setup))
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

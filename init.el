@@ -34,6 +34,7 @@
  '(custom-safe-themes
    '("f6cdb429a64db06d3db965871b45ed1c666fdce2d3e2c4b810868e4cf4244c92" default))
  '(fci-rule-color "#323342")
+ '(flycheck-checker-error-threshold 4000)
  '(global-display-line-numbers-mode t)
  '(highlight-changes-colors '("#ff8eff" "#ab7eff"))
  '(highlight-tail-colors
@@ -46,7 +47,7 @@
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(flycheck-clang-analyzer flycheck-clang-tidy cmake-mode exec-path-from-shell toml-mode rust-playground rustic rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode))
+   '(flycheck-clang-analyzer flycheck-clang-tidy cmake-mode exec-path-from-shell toml-mode rust-playground rustic rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode magit))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
@@ -71,7 +72,7 @@
 			(interactive)
 			(other-window -1)))
 
-
+(use-package magit)
 
 (use-package treemacs
     :hook (after-init .#'treemacs))

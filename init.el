@@ -111,7 +111,8 @@
   (lsp-keymap-prefix "s-p")
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  (setq lsp-restart 'auto-restart))
+  (setq lsp-restart 'auto-restart)
+  (setq lsp-auto-guess-root t))
 
 (use-package lsp-ui
   :commands lsp-ui-mode

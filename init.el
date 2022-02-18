@@ -67,7 +67,6 @@
 ;; Key-bindings
 ;; Undef
 (global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-w"))
 ;; Go to previous window
 (global-set-key (kbd "C-x p") (lambda ()
 			(interactive)
@@ -109,7 +108,7 @@
   (lsp-eldoc-render-all t)
   (lsp-idle-delay 0.6)
   (lsp-rust-analyzer-server-display-inlay-hints t)
-  (lsp-keymap-prefix "C-w")
+  (lsp-keymap-prefix "C-z")
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
   (setq lsp-restart 'auto-restart)

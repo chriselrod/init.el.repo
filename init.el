@@ -34,7 +34,6 @@
  '(custom-safe-themes
    '("f6cdb429a64db06d3db965871b45ed1c666fdce2d3e2c4b810868e4cf4244c92" default))
  '(fci-rule-color "#323342")
- '(flycheck-checker-error-threshold 4000)
  '(global-display-line-numbers-mode t)
  '(highlight-changes-colors '("#ff8eff" "#ab7eff"))
  '(highlight-tail-colors
@@ -47,20 +46,24 @@
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(flycheck-clang-analyzer flycheck-clang-tidy cmake-mode exec-path-from-shell toml-mode rust-playground rustic rust-mode company lsp-ui flycheck yasnippet dap-mode which-key treemacs-projectile helm-projectile helm-lsp lsp-treemacs lsp-mode markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode magit))
+   '(eglot-jl eglot flymake cmake-mode exec-path-from-shell toml-mode company yasnippet dap-mode which-key treemacs-projectile markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode magit))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)
  '(tool-bar-mode nil)
  '(warning-suppress-types '((comp) (comp) (comp))))
 ;; Commented out font as this causes lsp-ui sideline text to wrap. https://github.com/emacs-lsp/lsp-ui/issues/231
-(custom-set-faces)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 ;;  ;; custom-set-faces was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.
 ;;  ;; Your init file should contain only one such instance.
 ;;  ;; If there is more than one, they won't work right.
 ;;  '(default ((t (:family "Iosevka Term Curly" :foundry "UKWN" :slant normal :weight regular :height 120 :width normal)))))
-
 
 
 (setq inhibit-splash-screen t)
@@ -79,8 +82,8 @@
 (use-package treemacs-projectile)
 ;; (add-hook 'prog-mode-hook #'(lambda () (modify-syntax-entry ?_ "w")))
 
-(use-package helm)
-(use-package helm-projectile)
+;; (use-package helm)
+;; (use-package helm-projectile)
 (use-package which-key
     :config
     (which-key-mode))
@@ -93,83 +96,42 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+;; (use-package flymake)
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; for rust-analyzer integration
+(use-package eglot
 
-(use-package lsp-mode
-  :hook
-  (lsp-mode . lsp-enable-which-key-integration)
-  ((c-mode c++-mode julia-mode rustic) . lsp-deferred)
-  :commands lsp
-  :custom
-  ;; what to use when checking on-save. "check" is default, I prefer clippy
-  (lsp-rust-analyzer-cargo-watch-command "clippy")
-  (lsp-eldoc-render-all t)
-  (lsp-idle-delay 0.6)
-  (lsp-rust-analyzer-server-display-inlay-hints t)
-  (lsp-keymap-prefix "C-z")
-  :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  (setq lsp-restart 'auto-restart)
-  (setq lsp-auto-guess-root t))
+    :config
+    (setq eglot-connect-timeout 3600)
+    (setq eglot-autoreconnect t)
+    )
 
-(use-package lsp-ui
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  ;; (lsp-ui-doc-enable nil)
-  (lsp-ui-sideline-show-code-actions t)
-  (lsp-ui-sideline-delay 0.05))
+(define-key eglot-mode-map (kbd "C-z r") 'eglot-rename)
+(define-key eglot-mode-map (kbd "C-z o") 'eglot-code-action-organize-imports)
+(define-key eglot-mode-map (kbd "C-z h") 'eldoc)
+(define-key eglot-mode-map (kbd "C-z g") 'xref-find-definitions)
+(define-key eglot-mode-map (kbd "C-z =") 'eglot-format)
+(define-key eglot-mode-map (kbd "C-z a") 'eglot-code-actions)
+
 
 (use-package julia-mode)
-  ;; :hook (julia-mode . ((highlight-symbol-mode)
-  ;; (lsp)
-  ;; (lsp-ui-peek)))
-  ;; :custom
-  ;; julia-max-block-lookback 200000)
 (use-package julia-repl
+  :hook (julia-mode . julia-repl-mode)
   :config
   (setq julia-repl-switches "-O3 -q -tauto")
   (setq julia-repl-executable-records
    '((default "/home/chriselrod/Documents/languages/julia/usr/bin/julia")
      (release "/home/chriselrod/Documents/languages/juliarelease/usr/bin/julia")))
   (add-hook 'julia-mode-hook 'julia-repl-mode))
-(use-package lsp-julia
-  :config
-  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
+(use-package eglot-jl)
 
-;; https://github.com/rksm/emacs-rust-config
-(use-package rustic
-  :bind (:map rustic-mode-map
-              ("M-j" . lsp-ui-imenu)
-              ("M-?" . lsp-find-references)
-              ("C-c C-c l" . flycheck-list-errors)
-              ("C-c C-c a" . lsp-execute-code-action)
-              ("C-c C-c r" . lsp-rename)
-              ("C-c C-c q" . lsp-workspace-restart)
-              ("C-c C-c Q" . lsp-workspace-shutdown)
-              ("C-c C-c s" . lsp-rust-analyzer-status)
-              ("C-c C-c e" . lsp-rust-analyzer-expand-macro)
-              ("C-c C-c d" . dap-hydra)
-              ("C-c C-c h" . lsp-ui-doc-glance))
-  :config
-  ;; uncomment for less flashiness
-  ;; (setq lsp-eldoc-hook nil)
-  ;; (setq lsp-enable-symbol-highlighting nil)
-  ;; (setq lsp-signature-auto-activate nil)
+(add-hook 'c++-mode-hook 'eglot-ensure)
+(add-hook 'julia-mode-hook 'eglot-jl-init)
+(add-hook 'julia-mode-hook 'eglot-ensure)
 
-  ;; comment to disable rustfmt on save
-  (setq rustic-format-on-save t))
-;; (add-hook 'c-mode-hook 'lsp)
-;; (add-hook 'c++-mode-hook 'lsp)
-
-
-(use-package helm-lsp :commands helm-lsp-workspace-symbol)
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-(use-package flycheck)
+(use-package flymake
+           :hook eglot-mode  )
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; auto-completion and code snippets
@@ -220,12 +182,6 @@
 
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-;; Create / cleanup rust scratch projects quickly
-
-(use-package rust-playground)
-
-
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; for Cargo.toml and other config files
 
 (use-package toml-mode)
@@ -236,26 +192,6 @@
 
 (use-package exec-path-from-shell
   :init (exec-path-from-shell-initialize))
-
-(when (executable-find "lldb-mi")
-  (use-package dap-mode
-    :config
-    (dap-ui-mode)
-    (dap-ui-controls-mode 1)
-
-    (require 'dap-lldb)
-    (require 'dap-gdb-lldb)
-    ;; installs .extension/vscode
-    (dap-gdb-lldb-setup)
-    (dap-register-debug-template
-     "Rust::LLDB Run Configuration"
-     (list :type "lldb"
-           :request "launch"
-           :name "LLDB::Run"
-	   :gdbpath "rust-lldb"
-           ;; uncomment if lldb-mi is not in PATH
-           ;; :lldbmipath "path/to/lldb-mi"
-           ))))
 
 (setq load-path (cons (expand-file-name "~/.emacs.d/init.el.repo/llvm_mode") load-path))
 (require 'llvm-mode)
@@ -303,12 +239,4 @@
 
 (put 'downcase-region 'disabled nil)
 
-(use-package flycheck-clang-tidy
-  :after flycheck
-  :hook
-  (flycheck-mode . flycheck-clang-tidy-setup)
-  )
-(use-package flycheck-clang-analyzer
-  :after flycheck
-  :config (flycheck-clang-analyzer-setup))
 

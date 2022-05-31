@@ -21,37 +21,6 @@
   (package-refresh-contents)
   (package-install 'foggy-night-theme))
 
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#242728" "#ff0066" "#63de5d" "#E6DB74" "#06d8ff" "#ff8eff" "#53f2dc" "#f8fbfc"])
- '(compilation-message-face 'default)
- '(custom-enabled-themes '(foggy-night))
- '(custom-safe-themes
-   '("f6cdb429a64db06d3db965871b45ed1c666fdce2d3e2c4b810868e4cf4244c92" default))
- '(fci-rule-color "#323342")
- '(global-display-line-numbers-mode t)
- '(highlight-changes-colors '("#ff8eff" "#ab7eff"))
- '(highlight-tail-colors
-   '(("#323342" . 0)
-     ("#63de5d" . 20)
-     ("#4BBEAE" . 30)
-     ("#1DB4D0" . 50)
-     ("#9A8F21" . 60)
-     ("#A75B00" . 70)
-     ("#F309DF" . 85)
-     ("#323342" . 100)))
- '(package-selected-packages
-   '(eglot-jl eglot flymake cmake-mode exec-path-from-shell toml-mode company yasnippet dap-mode which-key treemacs-projectile markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode magit))
- '(pos-tip-background-color "#E6DB74")
- '(pos-tip-foreground-color "#242728")
- '(scroll-bar-mode nil)
- '(tool-bar-mode nil)
- '(warning-suppress-types '((comp) (comp) (comp))))
 ;; Commented out font as this causes lsp-ui sideline text to wrap. https://github.com/emacs-lsp/lsp-ui/issues/231
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -96,16 +65,16 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-;; (use-package flymake)
-
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-;; for rust-analyzer integration
 (use-package eglot
 
     :config
     (setq eglot-connect-timeout 3600)
     (setq eglot-autoreconnect t)
     )
+(use-package eldoc
+  :hook eglot-mode)
+(use-package flymake
+           :hook eglot-mode  )
 
 (define-key eglot-mode-map (kbd "C-z r") 'eglot-rename)
 (define-key eglot-mode-map (kbd "C-z o") 'eglot-code-action-organize-imports)
@@ -130,8 +99,6 @@
 (add-hook 'julia-mode-hook 'eglot-jl-init)
 (add-hook 'julia-mode-hook 'eglot-ensure)
 
-(use-package flymake
-           :hook eglot-mode  )
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; auto-completion and code snippets
@@ -239,4 +206,34 @@
 
 (put 'downcase-region 'disabled nil)
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#242728" "#ff0066" "#63de5d" "#E6DB74" "#06d8ff" "#ff8eff" "#53f2dc" "#f8fbfc"])
+ '(compilation-message-face 'default)
+ '(custom-enabled-themes '(foggy-night))
+ '(custom-safe-themes
+   '("f6cdb429a64db06d3db965871b45ed1c666fdce2d3e2c4b810868e4cf4244c92" default))
+ '(fci-rule-color "#323342")
+ '(global-display-line-numbers-mode t)
+ '(highlight-changes-colors '("#ff8eff" "#ab7eff"))
+ '(highlight-tail-colors
+   '(("#323342" . 0)
+     ("#63de5d" . 20)
+     ("#4BBEAE" . 30)
+     ("#1DB4D0" . 50)
+     ("#9A8F21" . 60)
+     ("#A75B00" . 70)
+     ("#F309DF" . 85)
+     ("#323342" . 100)))
+ '(package-selected-packages
+   '(eglot-jl eglot flymake cmake-mode exec-path-from-shell toml-mode company yasnippet dap-mode which-key treemacs-projectile markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode magit))
+ '(pos-tip-background-color "#E6DB74")
+ '(pos-tip-foreground-color "#242728")
+ '(scroll-bar-mode nil)
+ '(tool-bar-mode nil)
+ '(warning-suppress-types '((comp) (comp) (comp))))
 

@@ -164,6 +164,7 @@
 (require 'llvm-mode)
 
 (use-package cmake-mode)
+(use-package meson-mode)
 
 (use-package hl-todo
   :hook (prog-mode . hl-todo-mode)
@@ -230,7 +231,7 @@
      ("#F309DF" . 85)
      ("#323342" . 100)))
  '(package-selected-packages
-   '(eglot-jl eglot flymake cmake-mode exec-path-from-shell toml-mode company yasnippet dap-mode which-key treemacs-projectile markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode magit))
+   '(meson-mode eglot-jl eglot flymake cmake-mode exec-path-from-shell toml-mode company yasnippet dap-mode which-key treemacs-projectile markdown-mode hl-todo foggy-night-theme use-package julia-repl julia-mode magit))
  '(pos-tip-background-color "#E6DB74")
  '(pos-tip-foreground-color "#242728")
  '(scroll-bar-mode nil)

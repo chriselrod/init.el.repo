@@ -75,6 +75,8 @@
   :hook eglot-mode)
 (use-package flymake
            :hook eglot-mode  )
+(define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
+(define-key flymake-mode-map (kbd "M-p") 'flymake-goto-prev-error)
 
 (define-key eglot-mode-map (kbd "C-z r") 'eglot-rename)
 (define-key eglot-mode-map (kbd "C-z o") 'eglot-code-action-organize-imports)
@@ -83,6 +85,7 @@
 (define-key eglot-mode-map (kbd "C-z =") 'eglot-format)
 (define-key eglot-mode-map (kbd "C-z a") 'eglot-code-actions)
 
+(customize-set-variable 'help-at-pt-display-when-idle t)
 
 (use-package julia-mode)
 (use-package julia-repl
@@ -98,6 +101,7 @@
 (add-hook 'c++-mode-hook 'eglot-ensure)
 (add-hook 'julia-mode-hook 'eglot-jl-init)
 (add-hook 'julia-mode-hook 'eglot-ensure)
+(add-hook 'c-mode-hook 'eglot-ensure)
 
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

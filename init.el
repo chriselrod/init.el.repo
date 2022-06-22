@@ -114,15 +114,17 @@
   (add-hook 'text-mode-hook 'yas-minor-mode))
 
 (use-package company
-  :bind
-  (:map company-active-map
-              ("C-n". company-select-next)
-              ("C-p". company-select-previous)
-              ("M-<". company-select-first)
-              ("M->". company-select-last))
-  (:map company-mode-map
-        ("<tab>". tab-indent-or-complete)
-        ("TAB". tab-indent-or-complete)))
+  :config
+  (global-company-mode))
+  ;; :bind
+  ;; (:map company-active-map
+  ;;             ("C-n". company-select-next)
+  ;;             ("C-p". company-select-previous)
+  ;;             ("M-<". company-select-first)
+  ;;             ("M->". company-select-last))
+  ;; (:map company-mode-map
+  ;;       ("<tab>". tab-indent-or-complete)
+  ;;       ("TAB". tab-indent-or-complete)))
  
 (defun company-yasnippet-or-completion ()
   (interactive)
